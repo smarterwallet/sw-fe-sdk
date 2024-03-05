@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { ethers } from "ethers";
 import { UserOperation } from "../moduls/UserOperation";
-import { ContractCallParams } from "../moduls/ContractCallParams";
+import { ExecuteParams } from "../moduls/ContractCallParams";
 
 /**
  * Account Manage Interface
@@ -98,7 +97,7 @@ export interface AccountInterface {
   buildTxCallContract(
     entryPointAddress: string,
     gasPrice: BigNumber,
-    contractCalls: ContractCallParams[],
+    contractCalls: ExecuteParams[],
     tokenPaymasterAddress?: string,
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation>;
