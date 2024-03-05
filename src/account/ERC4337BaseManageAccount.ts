@@ -134,7 +134,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       gasPrice,
       [
         {
-          ethValue: BigNumber.from(amount),
+          ethValue: amount,
           toAddress
         },
       ],

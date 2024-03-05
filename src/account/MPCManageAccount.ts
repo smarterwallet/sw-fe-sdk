@@ -5,7 +5,6 @@ import { JSONBigInt } from "../mpc/CommonUtils.js";
 import { HttpUtils } from "../utils/HttpUtils";
 import { ERC4337BaseManageAccount } from "./ERC4337BaseManageAccount";
 import { hashMessage, joinSignature } from "ethers/lib/utils";
-import { CryptologyUtils } from "../utils/CryptologyUtils";
 import { CommonUtils } from "../utils/CommonUtils";
 
 const { arrayify } = require("@ethersproject/bytes");
