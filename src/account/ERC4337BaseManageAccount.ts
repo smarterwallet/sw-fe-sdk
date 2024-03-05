@@ -2,7 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { UserOperation } from "../moduls/UserOperation";
 import { AccountInterface } from "./AccountInterface";
 import { TxUtils } from "../utils/TxUtils";
-import { ContractWalletUtils } from "../utils/ContractUtils";
+import { ContractWalletUtils } from "../utils/ContractWalletUtils";
 import { ExecuteParams, isContractCallParams, isNavtieTransferParams } from "../moduls/ContractCallParams";
 
 const { arrayify } = require("@ethersproject/bytes");

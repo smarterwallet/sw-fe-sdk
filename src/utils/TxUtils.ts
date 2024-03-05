@@ -12,15 +12,6 @@ export class TxUtils {
   }
 }
 
-export const sleep = async (ms: number) => {
+const sleep = async (ms: number) => {
   await new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export const ab2str = (buffer: ArrayBuffer) => {
-  const decoder = new TextDecoder('utf-8');
-  return decoder.decode(buffer);
-}
-export const str2ab = (str: string) => {
-  const encoder = new TextEncoder();
-  return encoder.encode(str).buffer;
 }
