@@ -4,8 +4,12 @@ MPC key management and build ERC4337 transaction
 
 ## Features
 
-- MPC key management
-- Build AA transaction
+- Generate MPC keys
+- Save MPC keys
+- Build ERC4337 native token trascation
+- Build ERC4337 ERC20 token trascation
+- Build ERC4337 native token trascation with token pay master
+- Build ERC4337 ERC20 token trascation with token pay master
 
 ## Installation
 
@@ -104,3 +108,10 @@ console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 #### Transfer ERC20 Token without token pay master
 
 TODO
+
+## Unit Test
+
+```bash
+npm test -- ./test/build-ts.test.ts
+npm test -- ./test/mpc-ts.test.ts
+```

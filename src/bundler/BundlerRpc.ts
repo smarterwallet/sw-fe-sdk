@@ -17,8 +17,6 @@ export class BundlerRpc {
             method: "eth_sendUserOperation",
             params: [op, entryPointAddress],
         };
-        console.log(params);
-        // return await HttpUtils.post(Config.BUNDLER_API, null);
         return await HttpUtils.post(bundlerApi, params);
     }
 

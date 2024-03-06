@@ -37,15 +37,16 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
   public async initAccount(mpcKey: any) {
     console.log("initAccount");
 
+    // 初始化MPC实例
+    if (this.mpcWasmInstance === null || this.mpcWasmInstance === undefined) {
+      this.mpcWasmInstance = await this.generateMPCWasmInstance();
+    }
+
     if (mpcKey === "" || mpcKey === null) {
       console.log("mpcKey is null");
       return;
     }
 
-    // 初始化MPC实例
-    if (this.mpcWasmInstance === null || this.mpcWasmInstance === undefined) {
-      this.mpcWasmInstance = await this.generateMPCWasmInstance();
-    }
     const initP1KeyDataRes = await mpcWasmUtils.wasmInitP1KeyData(mpcKey);
     console.log("initP1KeyData: ", initP1KeyDataRes);
     const initP1KeyDataResJson = JSONBigInt.parse(initP1KeyDataRes);
@@ -71,15 +72,6 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     const keysResult = await mpcWasmUtils.wasmGenerateDeviceData();
     const keysJson = JSONBigInt.parse(keysResult);
     if (keysJson["code"] === 200) {
-      console.log(
-        "p1JsonData: " + JSONBigInt.stringify(keysJson["data"]["p1JsonData"])
-      );
-      console.log(
-        "p2JsonData: " + JSONBigInt.stringify(keysJson["data"]["p2JsonData"])
-      );
-      console.log(
-        "p3JsonData: " + JSONBigInt.stringify(keysJson["data"]["p3JsonData"])
-      );
       return keysJson["data"];
     } else {
       console.log("generateDeviceData error. Response: " + keysResult);

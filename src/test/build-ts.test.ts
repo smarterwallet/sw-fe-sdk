@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { MPCManageAccount } from './MPCManageAccount';
+import { MPCManageAccount } from '../account/MPCManageAccount';
 import { JSONBigInt } from '../mpc/CommonUtils';
 
 const timeout = 60 * 60 * 1000;
