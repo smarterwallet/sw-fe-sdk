@@ -15,9 +15,16 @@ MPC key management and build ERC4337 transaction
 
 To install the package, run the following command:
 
+For production environment:
+
 ```bash
 # latest
 npm install sw-fe-sdk
+```
+
+For test environment:
+
+```bash
 # beta
 npm install sw-fe-sdk@beta
 ```
@@ -147,6 +154,8 @@ const op = await mpcAccount.buildTxTransferERC20Token(
 );
 console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 ```
+
+The full test code is [here](https://github.com/smarterwallet/sw-fe-sdk/tree/dev/src/test).
 
 ## Unit Test
 
