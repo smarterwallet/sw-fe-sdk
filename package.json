@@ -1,13 +1,18 @@
 {
   "name": "sw-fe-sdk",
-  "version": "0.0.6-beta.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest"
   },
-  "keywords": ["SmarterWallet", "AA", "ERC4337", "SDK"],
+  "keywords": [
+    "SmarterWallet",
+    "AA",
+    "ERC4337",
+    "SDK"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
