@@ -52,6 +52,17 @@ const rpcUrl = "https://mumbai-rpc.web3idea.xyz"; // Replace with your RPC URL
 Create MPC keys when register wallet, follow these steps:
 
 ```javascript
+const mpcAccount = new MPCManageAccount(
+  rpcUrl, 
+  mpcBackendApiUrl, 
+  mpcWasmUrl, 
+  walletFactoryAddres, 
+  authorization, 
+  createWalletApiUrl
+);
+
+await mpcAccount.initAccount("");
+
 // Generate MPC keys
 const mpckeys = await mpcAccount.generateKeys()
 console.log("mpckeys:", JSONBigInt.stringify(mpckeys));
