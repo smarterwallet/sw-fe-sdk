@@ -217,28 +217,28 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     tokenPaymasterAddress?: string,
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
+    const execcteBatchCallData = [];
+    const execcteBatchAddress = [];
+    const execcteBatchValue: BigNumber[] = [];
+
     // ERC20 token 代付合约，需要先授权
-    const erc20Contract = new ethers.Contract(
-      ethers.constants.AddressZero,
-      erc20Abi,
-      this.ethersProvider
-    );
-    const approveZeroCallData = erc20Contract.interface.encodeFunctionData(
-      "approve", [tokenPaymasterAddress, 0]
-    );
-    const approveMaxCallData = erc20Contract.interface.encodeFunctionData(
-      "approve", [tokenPaymasterAddress, ethers.constants.MaxUint256]
-    );
-    // 组装调用的合约数据
-    const execcteBatchAddress = [
-      payGasFeeTokenAddress,
-      payGasFeeTokenAddress,
-    ];
-    const execcteBatchValue: BigNumber[] = [
-      BigNumber.from(0),
-      BigNumber.from(0),
-    ];
-    const execcteBatchCallData = [approveZeroCallData, approveMaxCallData];
+    if (tokenPaymasterAddress !== undefined && payGasFeeTokenAddress === undefined) {
+      const erc20Contract = new ethers.Contract(
+        ethers.constants.AddressZero,
+        erc20Abi,
+        this.ethersProvider
+      );
+      const approveZeroCallData = erc20Contract.interface.encodeFunctionData(
+        "approve", [tokenPaymasterAddress, 0]
+      );
+      const approveMaxCallData = erc20Contract.interface.encodeFunctionData(
+        "approve", [tokenPaymasterAddress, ethers.constants.MaxUint256]
+      );
+      // 组装调用的合约数据
+      execcteBatchAddress.push(payGasFeeTokenAddress, payGasFeeTokenAddress);
+      execcteBatchValue.push(BigNumber.from(0), BigNumber.from(0));
+      execcteBatchCallData.push(approveZeroCallData, approveMaxCallData);
+    }
 
     for (const contractCallParams of contractCalls) {
       if (isNavtieTransferParams(contractCallParams)) {
@@ -331,15 +331,21 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         maxPriorityFeePerGas,
       ]
     );
-    const paymasterSignPackHash = ethers.utils.keccak256(paymasterSignPack);
-    // The tested TokenPaymaster did not contain verification logic, so the signature was not verified
-    const paymasterDataSign = await this.ethersWallet.signMessage(
-      arrayify(paymasterSignPackHash)
-    );
-    paymasterAndData = ethers.utils.defaultAbiCoder.encode(
-      ["bytes20", "bytes"],
-      [tokenPaymasterAddress, paymasterDataSign]
-    );
+
+    // paymaster
+    if (tokenPaymasterAddress !== undefined) {
+      const paymasterSignPackHash = ethers.utils.keccak256(paymasterSignPack);
+      // The tested TokenPaymaster did not contain verification logic, so the signature was not verified
+      const paymasterDataSign = await this.ethersWallet.signMessage(
+        arrayify(paymasterSignPackHash)
+      );
+      paymasterAndData = ethers.utils.defaultAbiCoder.encode(
+        ["bytes20", "bytes"],
+        [tokenPaymasterAddress, paymasterDataSign]
+      );
+    } else {
+      paymasterAndData = "0x";
+    }
 
     // calculation UserOperation hash for sign
     let userOpPack = ethers.utils.defaultAbiCoder.encode(

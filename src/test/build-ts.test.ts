@@ -39,7 +39,19 @@ test('calculate owner address', async () => {
     expect(ownerAddress).toBe("0xd5eCdffB469576D7682fE6b02C9549d6C7756d98");
 }, timeout);
 
-test('build transfer native token tx', async () => {
+test('build transfer native token tx without token pay master', async () => {
+    const gasPrice = await ethersWallet.getGasPrice();
+    console.log("gasPrice:", gasPrice)
+    const op = await mpcAccount.buildTxTransferNativeToken(
+        entryPointAddress,
+        gasPrice,
+        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+        ethers.utils.parseEther("0.00001"),
+    );
+    console.log("transfer native token tx without token pay master. op:", JSONBigInt.stringify(op));
+}, timeout);
+
+test('build transfer native token tx with token pay master', async () => {
     const gasPrice = await ethersWallet.getGasPrice();
     console.log("gasPrice:", gasPrice)
     const op = await mpcAccount.buildTxTransferNativeToken(
@@ -50,10 +62,10 @@ test('build transfer native token tx', async () => {
         tokenPaymasterAddress,
         payGasFeeTokenAddress
     );
-    console.log("transfer native token tx op:", JSONBigInt.stringify(op));
+    console.log("transfer native token tx with token pay master. op:", JSONBigInt.stringify(op));
 }, timeout);
 
-test('build transfer erc20 token tx', async () => {
+test('build transfer erc20 token tx with token pay master', async () => {
     const gasPrice = await ethersWallet.getGasPrice();
     console.log("gasPrice:", gasPrice)
     const op = await mpcAccount.buildTxTransferERC20Token(
@@ -66,5 +78,19 @@ test('build transfer erc20 token tx', async () => {
         tokenPaymasterAddress,
         payGasFeeTokenAddress
     );
-    console.log("transfer erc20 token tx op:", JSONBigInt.stringify(op));
+    console.log("transfer erc20 token tx with token pay master. op:", JSONBigInt.stringify(op));
+}, timeout);
+
+test('build transfer erc20 token tx without token pay master', async () => {
+    const gasPrice = await ethersWallet.getGasPrice();
+    console.log("gasPrice:", gasPrice)
+    const op = await mpcAccount.buildTxTransferERC20Token(
+        entryPointAddress,
+        gasPrice,
+        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+        ethers.utils.parseEther("0.00001"),
+        // 这里是交易的token地址 这里测试直接用的tokenPaymasterAddress
+        tokenPaymasterAddress,
+    );
+    console.log("transfer erc20 token tx without token pay master. op:", JSONBigInt.stringify(op));
 }, timeout);

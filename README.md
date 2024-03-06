@@ -16,7 +16,10 @@ MPC key management and build ERC4337 transaction
 To install the package, run the following command:
 
 ```bash
+# latest
 npm install sw-fe-sdk
+# beta
+npm install sw-fe-sdk@beta
 ```
 
 ## Usage
@@ -68,7 +71,7 @@ console.log("Owner Address:", ownerAddress);
 
 #### Transfer Native Token with token pay master
 
-To build a transaction for transferring native tokens:
+To build a transaction for transferring native tokens with token pay master:
 
 ```javascript
 const gasPrice = await ethersWallet.getGasPrice();
@@ -85,11 +88,22 @@ console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
 
 #### Transfer Native Token without token pay master
 
-TODO
+To build a transaction for transferring native tokens without token pay master:
+
+```javascript
+const gasPrice = await ethersWallet.getGasPrice();
+const op = await mpcAccount.buildTxTransferNativeToken(
+  entryPointAddress,
+  gasPrice,
+  "0xRecipientAddress", // Replace with the recipient's address
+  ethers.utils.parseEther("Amount") // Replace with the amount to send
+);
+console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
+```
 
 #### Transfer ERC20 Token with token pay master
 
-To build a transaction for transferring ERC20 tokens:
+To build a transaction for transferring ERC20 tokens with token pay master:
 
 ```javascript
 const gasPrice = await ethersWallet.getGasPrice();
@@ -107,7 +121,19 @@ console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 
 #### Transfer ERC20 Token without token pay master
 
-TODO
+To build a transaction for transferring ERC20 tokens without token pay master:
+
+```javascript
+const gasPrice = await ethersWallet.getGasPrice();
+const op = await mpcAccount.buildTxTransferERC20Token(
+  entryPointAddress,
+  gasPrice,
+  "0xRecipientAddress", // Replace with the recipient's address
+  ethers.utils.parseEther("Amount"), // Replace with the amount to send
+  "0xTokenAddress" // Replace with the ERC20 token address
+);
+console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
+```
 
 ## Unit Test
 
