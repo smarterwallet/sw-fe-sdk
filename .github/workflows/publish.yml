@@ -23,13 +23,13 @@ jobs:
 
     - name: Generate random version
       run: |
-        RANDOM_SUFFIX=$(date +%s%3) # 使用秒和毫秒数
-        PACKAGE_VERSION=$(node -p "require('./package.json').version")-$RANDOM_SUFFIX
+        RANDOM_SUFFIX=$(date +%s)
+        PACKAGE_VERSION=$(node -p "require('./package.json').version")-beta.$RANDOM_SUFFIX
         echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
     - name: Update version in package.json
       run: |
-        npm version 0.0.6-beta.${{ env.PACKAGE_VERSION }} --no-git-tag-version
+        npm version ${{ env.PACKAGE_VERSION }} --no-git-tag-version
 
     - name: Build
       run: npm run build
