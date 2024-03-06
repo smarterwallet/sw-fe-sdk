@@ -1,6 +1,6 @@
 {
   "name": "sw-fe-sdk",
-  "version": "1.0.1",
+  "version": "1.0.111",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
