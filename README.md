@@ -4,12 +4,12 @@ MPC key management and build ERC4337 transaction
 
 ## Features
 
-- Generate MPC keys
-- Save MPC keys
-- Build ERC4337 native token trascation
-- Build ERC4337 ERC20 token trascation
-- Build ERC4337 native token trascation with token pay master
-- Build ERC4337 ERC20 token trascation with token pay master
+- [x] Generate MPC keys
+- [x] Save MPC keys
+- [x] Build ERC4337 native token trascation
+- [x] Build ERC4337 ERC20 token trascation
+- [x] Build ERC4337 native token trascation with token pay master
+- [x] Build ERC4337 ERC20 token trascation with token pay master
 
 ## Installation
 
@@ -40,11 +40,24 @@ const rpcUrl = "https://mumbai-rpc.web3idea.xyz"; // Replace with your RPC URL
 // ... other constants
 ```
 
-### Creating an MPC Account
+### Create MPC Account
+
+Create MPC keys when register wallet, follow these steps:
+
+```javascript
+// Generate MPC keys
+const mpckeys = await mpcAccount.generateKeys()
+console.log("mpckeys:", JSONBigInt.stringify(mpckeys));
+// Save to local...
+// Save to decenterlized server...
+// Save to Smarter wallet server...
+```
+
+### Initialize MPC Account
 
 To initialize and use an MPC account, follow these steps:
 
-1. Initialize the account with the given key string:
+#### 1. Initialize the account with the given key string
 
 ```javascript
 const mpcAccount = new MPCManageAccount(
@@ -56,11 +69,11 @@ const mpcAccount = new MPCManageAccount(
   createWalletApiUrl
 );
 
-// mpcKeyStr is string, e.g.: '{"Id":1,"ShareI":219499044982805701588892377127447501004150432209403709303384334655408914819632,"PublicKey":{"Curve":"secp256k1","X":97292621653416266750380703637875538596866301353776849812982916816163853412988,"Y":32440693875191451391160231867342089322288044048122424317742935922111154446039},"ChainCode":"013d57fb4dea99754bc3773dedf201f9c555684eab127a529d335663c0063425c9","SharePubKeyMap":{"1":{"Curve":"secp256k1","X":29161051009961544429569809800230777877472024870500305033506395207674118416373,"Y":44796153314212729221467409179106608297103339961871905099986927630538307838333},"2":{"Curve":"secp256k1","X":40713022408703343240041761412242766867715143730321538117446016757996923246685,"Y":54311185172390094674585055235636263490742909410647712991051877387418786801570},"3":{"Curve":"secp256k1","X":36535362237429459090412737650018500331292975515911824642793483191706305761009,"Y":97503616435531946333830622361346685900869373933095170990256609518446036018220}}}'
+// mpcKeyStr is a string, one of mpckeys. e.g.: '{"Id":1,"ShareI":219499044982805701588892377127447501004150432209403709303384334655408914819632,"PublicKey":{"Curve":"secp256k1","X":97292621653416266750380703637875538596866301353776849812982916816163853412988,"Y":32440693875191451391160231867342089322288044048122424317742935922111154446039},"ChainCode":"013d57fb4dea99754bc3773dedf201f9c555684eab127a529d335663c0063425c9","SharePubKeyMap":{"1":{"Curve":"secp256k1","X":29161051009961544429569809800230777877472024870500305033506395207674118416373,"Y":44796153314212729221467409179106608297103339961871905099986927630538307838333},"2":{"Curve":"secp256k1","X":40713022408703343240041761412242766867715143730321538117446016757996923246685,"Y":54311185172390094674585055235636263490742909410647712991051877387418786801570},"3":{"Curve":"secp256k1","X":36535362237429459090412737650018500331292975515911824642793483191706305761009,"Y":97503616435531946333830622361346685900869373933095170990256609518446036018220}}}'
 await mpcAccount.initAccount(mpcKeyStr);
 ```
 
-2. Calculate the owner address:
+#### 2. Calculate the owner address
 
 ```javascript
 const ownerAddress = await mpcAccount.getOwnerAddress();
