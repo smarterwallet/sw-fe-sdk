@@ -11,7 +11,6 @@ import {
 
 const { arrayify } = require("@ethersproject/bytes");
 
-import simpleAccountFactoryAbi from "../data/SimpleAccountFactory.js";
 import simpleAccountAbi from "../data/SimpleAccount.js";
 import erc20Abi from "../data/IERC20.js";
 import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
@@ -20,40 +19,21 @@ import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
  * Account Manage Base Class
  */
 export class ERC4337BaseManageAccount implements AccountInterface {
-  /**
-   * smart contract address for saving the asset
-   */
-  private walletFactoryAddres: string = "";
-  private walletAddressSalt: number = 0;
-  private walletAddress: string = "";
 
   /**
-   * wallet client
+   * block chain rpc url
    */
-  private ethersWallet: ethers.Wallet;
-  private ethersProvider: ethers.providers.JsonRpcProvider;
-
-  /**
-   * gasPrice = gasPriceOnChain * feeRate / 100
-   */
-  private feeRate: number;
+  protected blockchainRpc: string;
 
   /**
    * a data for init account
    */
   protected initData: any;
 
-  constructor(rpcUrl: string, walletFactoryAddres: string) {
+  constructor(rpcUrl: string) {
     console.log("ERC4337BaseManageAccount constructor");
-    this.feeRate = 150;
 
-    this.walletFactoryAddres = walletFactoryAddres;
-
-    this.ethersProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    this.ethersWallet = new ethers.Wallet(
-      ethers.Wallet.createRandom().privateKey,
-      this.ethersProvider
-    );
+    this.blockchainRpc = rpcUrl;
   }
 
   /**
@@ -61,35 +41,14 @@ export class ERC4337BaseManageAccount implements AccountInterface {
    */
   async initAccount(data: any) {
     this.initData = data;
-
-    // calc contract wallet address
-    this.walletAddress = await this.calcContractWalletAddress();
-  }
-
-  async calcContractWalletAddress(): Promise<string> {
-    console.log("Owner EOA Address: ", await this.getOwnerAddress());
-
-    let contract = new ethers.Contract(
-      this.walletFactoryAddres,
-      simpleAccountFactoryAbi,
-      this.ethersProvider
-    );
-    try {
-      return await contract.getAddress(
-        this.getOwnerAddress(),
-        this.walletAddressSalt
-      );
-    } catch (error) {
-      console.error(error);
-      return "";
-    }
   }
 
   async deployContractWalletIfNotExist(
     createWalletApiUrl: string,
-    ownerAddress: string
+    ownerAddress: string,
+    walletAddress: string
   ) {
-    if (this.ethersWallet == null) {
+    if (this.blockchainRpc == null) {
       console.log("ethersWallet has not been init.");
       return;
     }
@@ -97,8 +56,8 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     console.log("start to check contract account");
     if (
       await ContractWalletUtils.checkContractAddressExist(
-        this.ethersProvider,
-        this.walletAddress
+        this.blockchainRpc,
+        walletAddress
       )
     ) {
       console.log("contract account has been deployed.");
@@ -115,24 +74,30 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     console.log("create contract tx hash: ", tx);
 
     await TxUtils.waitForTransactionUntilOnChain(
-      this.ethersProvider,
+      this.blockchainRpc,
       tx.body["result"]
     );
 
-    let newContractAddress = this.walletAddress;
+    let newContractAddress = walletAddress;
 
-    if (this.walletAddress !== newContractAddress) {
+    if (walletAddress !== newContractAddress) {
       throw new Error(
         "Deployed contract address error. The new contract address not equals contract address"
       );
     }
   }
 
-  private async getContractWalletAddressNonce(): Promise<string> {
+  private async getWalletAddressNonce(walletAddress: string): Promise<string> {
+    if (this.blockchainRpc == null) {
+      throw new Error("blockchainRpc has not been set.");
+    }
+
+    const ethersProvider = new ethers.providers.JsonRpcProvider(this.blockchainRpc);
+
     let contract = new ethers.Contract(
-      this.walletAddress,
+      walletAddress,
       simpleAccountAbi,
-      this.ethersProvider
+      ethersProvider
     );
     try {
       return (await contract.nonce()).toBigInt();
@@ -146,6 +111,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
    * Build tx
    */
   async buildTxTransferNativeToken(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -154,6 +120,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
     let op = await this.buildTxCallContract(
+      walletAddress,
       entryPointAddress,
       gasPrice,
       [
@@ -169,6 +136,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
   }
 
   async buildTxTransferERC20Token(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -178,6 +146,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
     let op = await this.buildTxCallContract(
+      walletAddress,
       entryPointAddress,
       gasPrice,
       [
@@ -196,6 +165,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
   }
 
   public async buildTxApproveERC20Token(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -205,6 +175,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
     let op = await this.buildTxCallContract(
+      walletAddress,
       entryPointAddress,
       gasPrice,
       [
@@ -235,12 +206,19 @@ export class ERC4337BaseManageAccount implements AccountInterface {
    * @returns
    */
   public async buildTxCallContract(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     contractCalls: ExecuteParams[],
     tokenPaymasterAddress?: string,
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
+    const ethersProvider = new ethers.providers.JsonRpcProvider(this.blockchainRpc);
+    const ethersWallet = new ethers.Wallet(
+      ethers.Wallet.createRandom().privateKey,
+      ethersProvider
+    );
+
     const execcteBatchCallData = [];
     const execcteBatchAddress = [];
     const execcteBatchValue: BigNumber[] = [];
@@ -253,7 +231,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       const erc20Contract = new ethers.Contract(
         ethers.constants.AddressZero,
         erc20Abi,
-        this.ethersProvider
+        ethersProvider
       );
       const approveZeroCallData = erc20Contract.interface.encodeFunctionData(
         "approve",
@@ -291,7 +269,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         const callContract = new ethers.Contract(
           ethers.constants.AddressZero,
           callContractAbi,
-          this.ethersProvider
+          ethersProvider
         );
         const callTxData = callContract.interface.encodeFunctionData(
           callFunc,
@@ -303,7 +281,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     const smarterAccountContract = new ethers.Contract(
       ethers.constants.AddressZero,
       smarterAccountV1Abi,
-      this.ethersProvider
+      ethersProvider
     );
     const callData = smarterAccountContract.interface.encodeFunctionData(
       "executeBatch(address[],uint256[],bytes[])",
@@ -311,6 +289,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     );
     // 构建UserOperation
     return await this.buildUserOperation(
+      walletAddress,
       callData,
       entryPointAddress,
       gasPrice,
@@ -322,13 +301,19 @@ export class ERC4337BaseManageAccount implements AccountInterface {
    * 构建UserOperation
    */
   private async buildUserOperation(
+    walletAddress: string,
     callData: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     tokenPaymasterAddress?: string
   ): Promise<UserOperation> {
-    const senderAddress = this.walletAddress;
-    const nonce = await this.getContractWalletAddressNonce();
+    const ethersProvider = new ethers.providers.JsonRpcProvider(this.blockchainRpc);
+    const ethersWallet = new ethers.Wallet(
+      ethers.Wallet.createRandom().privateKey,
+      ethersProvider
+    );
+
+    const nonce = await this.getWalletAddressNonce(walletAddress);
     const initCode = "0x";
 
     // TODO The way in which parameters are determined needs to be discussed
@@ -354,7 +339,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         "uint256",
       ],
       [
-        senderAddress,
+        walletAddress,
         nonce,
         initCode,
         callData,
@@ -370,7 +355,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     if (tokenPaymasterAddress !== undefined) {
       const paymasterSignPackHash = ethers.utils.keccak256(paymasterSignPack);
       // The tested TokenPaymaster did not contain verification logic, so the signature was not verified
-      const paymasterDataSign = await this.ethersWallet.signMessage(
+      const paymasterDataSign = await ethersWallet.signMessage(
         arrayify(paymasterSignPackHash)
       );
       paymasterAndData = ethers.utils.defaultAbiCoder.encode(
@@ -397,7 +382,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         "bytes",
       ],
       [
-        senderAddress,
+        walletAddress,
         nonce,
         initCode,
         callData,
@@ -413,7 +398,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     // remove signature
     userOpPack = userOpPack.substring(0, userOpPack.length - 64);
     const hash = ethers.utils.keccak256(userOpPack);
-    const { chainId } = await this.ethersProvider.getNetwork();
+    const { chainId } = await ethersProvider.getNetwork();
     const packData = ethers.utils.defaultAbiCoder.encode(
       ["bytes32", "address", "uint256"],
       [hash, entryPointAddress, chainId]
@@ -424,7 +409,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     signature = await this.ownerSign(userOpHash);
 
     const userOperation: UserOperation = {
-      sender: senderAddress,
+      sender: walletAddress,
       nonce: nonce.toString(),
       initCode: initCode,
       callData: callData,

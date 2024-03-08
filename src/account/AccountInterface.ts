@@ -34,6 +34,7 @@ export interface AccountInterface {
    * @param payGasFeeTokenAddress pay gas fee token address
    */
   buildTxTransferNativeToken(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -54,6 +55,7 @@ export interface AccountInterface {
    * @param payGasFeeTokenAddress pay gas fee token address
    */
   buildTxTransferERC20Token(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -75,6 +77,7 @@ export interface AccountInterface {
    * @param payGasFeeTokenAddress pay gas fee token address
    */
   buildTxApproveERC20Token(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     toAddress: string,
@@ -94,6 +97,7 @@ export interface AccountInterface {
    * @param payGasFeeTokenAddress pay gas fee token address
    */
   buildTxCallContract(
+    walletAddress: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
     contractCalls: ExecuteParams[],
@@ -106,6 +110,7 @@ export interface AccountInterface {
    */
   deployContractWalletIfNotExist(
     createWalletApiUrl: string,
-    ownerAddress: string
+    ownerAddress: string,
+    walletAddress: string
   ): void;
 }

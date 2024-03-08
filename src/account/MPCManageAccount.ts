@@ -17,16 +17,16 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
    * wasm instance
    */
   private mpcWasmInstance: any;
-  private ownerAddress: string | undefined;
+  private ownerAddress: string = "";
   private primCacheKey: string = "primResult";
   private mpcBackendApiUrl: string;
   private mpcWasmUrl: string;
   private authorization: string;
   private createWalletApiUrl: string;
 
-  constructor(rpcUrl: string, mpcBackendApiUrl: string, mpcWasmUrl: string, walletFactoryAddres: string, authorization: string, createWalletApiUrl: string) {
+  constructor(blockchainRpcUrl: string, mpcBackendApiUrl: string, mpcWasmUrl: string, authorization: string, createWalletApiUrl: string) {
     console.log("MPCManageAccount constructor");
-    super(rpcUrl, walletFactoryAddres);
+    super(blockchainRpcUrl);
 
     this.mpcBackendApiUrl = mpcBackendApiUrl;
     this.mpcWasmUrl = mpcWasmUrl;
@@ -57,8 +57,20 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
 
     // 初始化账户
     await super.initAccount(mpcKey);
-    const ownerAddress = await this.getOwnerAddress();
-    await this.deployContractWalletIfNotExist(this.createWalletApiUrl, ownerAddress);
+
+    // 计算owner地址
+    await this.updateOwnerAddress();
+  }
+
+  private async updateOwnerAddress() {
+    this.ownerAddress = await this.getOwnerAddress();
+  }
+
+  public async deployContractWalletIfNotExist(walletAddress: string) {
+    if (this.ownerAddress === null || this.ownerAddress === undefined || this.ownerAddress === "") {
+      await this.updateOwnerAddress();
+    }
+    await super.deployContractWalletIfNotExist(this.createWalletApiUrl, this.ownerAddress, walletAddress);
   }
 
   private async generateMPCWasmInstance() {
@@ -79,7 +91,7 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     }
   }
 
-  async getOwnerAddress(): Promise<string> {
+  public async getOwnerAddress(): Promise<string> {
     if (this.initData == null || this.initData === "") {
       console.log("have not login wallet server");
       return "";
@@ -164,7 +176,7 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     return address;
   }
 
-  async ownerSign(message: string): Promise<string> {
+  public async ownerSign(message: string): Promise<string> {
     let hash = hashMessage(arrayify(message));
     hash = hash.substring(2);
     // send http request to get address
@@ -257,6 +269,10 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     const signHex = "0x" + JSONBigInt.parse(p1Step3Res)["data"]["SignHex"];
     const signForContract = joinSignature(signHex);
     return signForContract;
+  }
+
+  public setBlockchainRpc(blockchainRpcUrl: string) {
+    this.blockchainRpc = blockchainRpcUrl;
   }
 
 }

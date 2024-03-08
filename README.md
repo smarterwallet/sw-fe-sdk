@@ -45,14 +45,7 @@ Set up the RPC URL and other constants:
 ```javascript
 const rpcUrl = "https://mumbai-rpc.web3idea.xyz"; // Replace with your RPC URL
 // ... other constants
-const mpcAccount = new MPCManageAccount(
-  rpcUrl, 
-  mpcBackendApiUrl, 
-  mpcWasmUrl, 
-  walletFactoryAddres, 
-  authorization, 
-  createWalletApiUrl
-);
+const mpcAccount = new MPCManageAccount(blockchainRpcUrl, mpcBackendApiUrl, mpcWasmUrl, authorization, createWalletApiUrl);
 ```
 
 ### Create MPC Account
@@ -81,11 +74,24 @@ To initialize and use an MPC account, follow these steps:
 await mpcAccount.initAccount(mpcKeyStr);
 ```
 
-#### 2. Calculate the owner address
+#### 2. Calculate owner address
 
 ```javascript
 const ownerAddress = await mpcAccount.getOwnerAddress();
 console.log("Owner Address:", ownerAddress);
+```
+
+#### 3. Calculate contract wallet address
+
+```javascript
+const walletFactoryAddres = 'walletFactoryAddres';
+const walletAddress = await ContractWalletUtils.calcContractWalletAddress(blockchainRpcUrl, await mpcAccount.getOwnerAddress(), walletFactoryAddres, 0);
+```
+
+#### 4. Deploy your wallet wallet
+
+```javascript
+await mpcAccount.deployContractWalletIfNotExist(walletAddress);
 ```
 
 ### Transactions
@@ -95,10 +101,10 @@ console.log("Owner Address:", ownerAddress);
 To build a transaction for transferring native tokens with token pay master:
 
 ```javascript
-const gasPrice = await ethersWallet.getGasPrice();
 const op = await mpcAccount.buildTxTransferNativeToken(
+  walletAddress,
   entryPointAddress,
-  gasPrice,
+  await ethersWallet.getGasPrice(),
   "0xRecipientAddress", // Replace with the recipient's address
   ethers.utils.parseEther("Amount"), // Replace with the amount to send
   tokenPaymasterAddress,
@@ -112,10 +118,10 @@ console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
 To build a transaction for transferring native tokens without token pay master:
 
 ```javascript
-const gasPrice = await ethersWallet.getGasPrice();
 const op = await mpcAccount.buildTxTransferNativeToken(
+  walletAddress,
   entryPointAddress,
-  gasPrice,
+  await ethersWallet.getGasPrice(),
   "0xRecipientAddress", // Replace with the recipient's address
   ethers.utils.parseEther("Amount") // Replace with the amount to send
 );
@@ -127,10 +133,10 @@ console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
 To build a transaction for transferring ERC20 tokens with token pay master:
 
 ```javascript
-const gasPrice = await ethersWallet.getGasPrice();
 const op = await mpcAccount.buildTxTransferERC20Token(
+  walletAddress,
   entryPointAddress,
-  gasPrice,
+  await ethersWallet.getGasPrice(),
   "0xRecipientAddress", // Replace with the recipient's address
   ethers.utils.parseEther("Amount"), // Replace with the amount to send
   "0xTokenAddress", // Replace with the ERC20 token address
@@ -145,10 +151,10 @@ console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 To build a transaction for transferring ERC20 tokens without token pay master:
 
 ```javascript
-const gasPrice = await ethersWallet.getGasPrice();
 const op = await mpcAccount.buildTxTransferERC20Token(
+  walletAddress,
   entryPointAddress,
-  gasPrice,
+  await ethersWallet.getGasPrice(),
   "0xRecipientAddress", // Replace with the recipient's address
   ethers.utils.parseEther("Amount"), // Replace with the amount to send
   "0xTokenAddress" // Replace with the ERC20 token address
