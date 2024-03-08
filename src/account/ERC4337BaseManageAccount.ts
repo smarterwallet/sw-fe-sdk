@@ -3,20 +3,23 @@ import { UserOperation } from "../moduls/UserOperation";
 import { AccountInterface } from "./AccountInterface";
 import { TxUtils } from "../utils/TxUtils";
 import { ContractWalletUtils } from "../utils/ContractWalletUtils";
-import { ExecuteParams, isContractCallParams, isNavtieTransferParams } from "../moduls/ContractCallParams";
+import {
+  ExecuteParams,
+  isContractCallParams,
+  isNavtieTransferParams,
+} from "../moduls/ContractCallParams";
 
 const { arrayify } = require("@ethersproject/bytes");
 
-const simpleAccountFactoryAbi = require("../data/SimpleAccountFactory.json");
-const simpleAccountAbi = require("../data/SimpleAccount.json");
-const erc20Abi = require("../data/IERC20.json");
-const smarterAccountV1Abi = require("../data/SmarterAccountV1.json");
+import simpleAccountFactoryAbi from "../data/SimpleAccountFactory.js";
+import simpleAccountAbi from "../data/SimpleAccount.js";
+import erc20Abi from "../data/IERC20.js";
+import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
 
 /**
  * Account Manage Base Class
  */
 export class ERC4337BaseManageAccount implements AccountInterface {
-
   /**
    * smart contract address for saving the asset
    */
@@ -47,7 +50,10 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     this.walletFactoryAddres = walletFactoryAddres;
 
     this.ethersProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
-    this.ethersWallet = new ethers.Wallet(ethers.Wallet.createRandom().privateKey, this.ethersProvider);
+    this.ethersWallet = new ethers.Wallet(
+      ethers.Wallet.createRandom().privateKey,
+      this.ethersProvider
+    );
   }
 
   /**
@@ -61,29 +67,40 @@ export class ERC4337BaseManageAccount implements AccountInterface {
   }
 
   async calcContractWalletAddress(): Promise<string> {
-    console.log('Owner EOA Address: ', await this.getOwnerAddress());
+    console.log("Owner EOA Address: ", await this.getOwnerAddress());
 
     let contract = new ethers.Contract(
       this.walletFactoryAddres,
       simpleAccountFactoryAbi,
-      this.ethersProvider,
+      this.ethersProvider
     );
     try {
-      return await contract.getAddress(this.getOwnerAddress(), this.walletAddressSalt);
+      return await contract.getAddress(
+        this.getOwnerAddress(),
+        this.walletAddressSalt
+      );
     } catch (error) {
       console.error(error);
-      return '';
+      return "";
     }
   }
 
-  async deployContractWalletIfNotExist(createWalletApiUrl: string, ownerAddress: string) {
+  async deployContractWalletIfNotExist(
+    createWalletApiUrl: string,
+    ownerAddress: string
+  ) {
     if (this.ethersWallet == null) {
       console.log("ethersWallet has not been init.");
       return;
     }
 
     console.log("start to check contract account");
-    if (await ContractWalletUtils.checkContractAddressExist(this.ethersProvider, this.walletAddress)) {
+    if (
+      await ContractWalletUtils.checkContractAddressExist(
+        this.ethersProvider,
+        this.walletAddress
+      )
+    ) {
       console.log("contract account has been deployed.");
       return;
     }
@@ -91,7 +108,10 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     // create smart contract account on chain
     console.log("create contract");
     let params = { address: ownerAddress };
-    let tx = await ContractWalletUtils.createSmartContractWalletAccount(createWalletApiUrl, params);
+    let tx = await ContractWalletUtils.createSmartContractWalletAccount(
+      createWalletApiUrl,
+      params
+    );
     console.log("create contract tx hash: ", tx);
 
     await TxUtils.waitForTransactionUntilOnChain(
@@ -109,12 +129,16 @@ export class ERC4337BaseManageAccount implements AccountInterface {
   }
 
   private async getContractWalletAddressNonce(): Promise<string> {
-    let contract = new ethers.Contract(this.walletAddress, simpleAccountAbi, this.ethersProvider);
+    let contract = new ethers.Contract(
+      this.walletAddress,
+      simpleAccountAbi,
+      this.ethersProvider
+    );
     try {
       return (await contract.nonce()).toBigInt();
     } catch (error) {
       console.error(error);
-      return '';
+      return "";
     }
   }
 
@@ -135,7 +159,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       [
         {
           ethValue: amount,
-          toAddress
+          toAddress,
         },
       ],
       tokenPaymasterAddress,
@@ -222,17 +246,22 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     const execcteBatchValue: BigNumber[] = [];
 
     // ERC20 token 代付合约，需要先授权
-    if (tokenPaymasterAddress !== undefined && payGasFeeTokenAddress === undefined) {
+    if (
+      tokenPaymasterAddress !== undefined &&
+      payGasFeeTokenAddress === undefined
+    ) {
       const erc20Contract = new ethers.Contract(
         ethers.constants.AddressZero,
         erc20Abi,
         this.ethersProvider
       );
       const approveZeroCallData = erc20Contract.interface.encodeFunctionData(
-        "approve", [tokenPaymasterAddress, 0]
+        "approve",
+        [tokenPaymasterAddress, 0]
       );
       const approveMaxCallData = erc20Contract.interface.encodeFunctionData(
-        "approve", [tokenPaymasterAddress, ethers.constants.MaxUint256]
+        "approve",
+        [tokenPaymasterAddress, ethers.constants.MaxUint256]
       );
       // 组装调用的合约数据
       execcteBatchAddress.push(payGasFeeTokenAddress, payGasFeeTokenAddress);
@@ -250,7 +279,13 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         continue;
       } else if (isContractCallParams(contractCallParams)) {
         // 组装钱包合约调用数据
-        const { ethValue, callContractAbi, callContractAddress, callFunc, callParams } = contractCallParams;
+        const {
+          ethValue,
+          callContractAbi,
+          callContractAddress,
+          callFunc,
+          callParams,
+        } = contractCallParams;
         execcteBatchAddress.push(callContractAddress);
         execcteBatchValue.push(ethValue);
         const callContract = new ethers.Contract(
@@ -279,10 +314,9 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       callData,
       entryPointAddress,
       gasPrice,
-      tokenPaymasterAddress,
+      tokenPaymasterAddress
     );
   }
-
 
   /**
    * 构建UserOperation
@@ -291,7 +325,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     callData: string,
     entryPointAddress: string,
     gasPrice: BigNumber,
-    tokenPaymasterAddress?: string,
+    tokenPaymasterAddress?: string
   ): Promise<UserOperation> {
     const senderAddress = this.walletAddress;
     const nonce = await this.getContractWalletAddressNonce();

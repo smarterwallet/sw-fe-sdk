@@ -1,4 +1,4 @@
-[
+export default [
   {
     "inputs": [
       {
@@ -136,29 +136,6 @@
         "internalType": "address[]",
         "name": "dest",
         "type": "address[]"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "func",
-        "type": "bytes[]"
-      }
-    ],
-    "name": "executeBatch",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "dest",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
       },
       {
         "internalType": "bytes[]",

@@ -6,7 +6,6 @@ import { ExecuteParams } from "../moduls/ContractCallParams";
  * Account Manage Interface
  */
 export interface AccountInterface {
-
   /**
    * init account
    * @param data init account data, e.g. private key
@@ -26,7 +25,7 @@ export interface AccountInterface {
 
   /**
    * build native token transfer tx
-   * 
+   *
    * @param entryPointAddress entry point address
    * @param gasPrice gas price
    * @param toAddress transfer to address
@@ -45,7 +44,7 @@ export interface AccountInterface {
 
   /**
    * build erc20 token transfer tx
-   * 
+   *
    * @param entryPointAddress entry point address
    * @param gasPrice gas price
    * @param toAddress transfer to address
@@ -66,7 +65,7 @@ export interface AccountInterface {
 
   /**
    * build erc20 token approve tx
-   * 
+   *
    * @param entryPointAddress entry point address
    * @param gasPrice gas price
    * @param toAddress approve to address
@@ -87,7 +86,7 @@ export interface AccountInterface {
 
   /**
    * build tx call contract
-   * 
+   *
    * @param entryPointAddress entry point address
    * @param gasPrice gas price
    * @param contractCalls call contract params
@@ -105,6 +104,8 @@ export interface AccountInterface {
   /**
    * deploy smart contract wallet
    */
-  deployContractWalletIfNotExist(createWalletApiUrl:string, ownerAddress: string): void;
-  
+  deployContractWalletIfNotExist(
+    createWalletApiUrl: string,
+    ownerAddress: string
+  ): void;
 }
