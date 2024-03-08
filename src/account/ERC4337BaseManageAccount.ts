@@ -21,7 +21,7 @@ import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
 export class ERC4337BaseManageAccount implements AccountInterface {
 
   /**
-   * block chain rpc url
+   * block chain rpc url, for check wallet address exist, get wallet address nonce, get chain id
    */
   protected blockchainRpc: string;
 
@@ -213,12 +213,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     tokenPaymasterAddress?: string,
     payGasFeeTokenAddress?: string
   ): Promise<UserOperation> {
-    const ethersProvider = new ethers.providers.JsonRpcProvider(this.blockchainRpc);
-    const ethersWallet = new ethers.Wallet(
-      ethers.Wallet.createRandom().privateKey,
-      ethersProvider
-    );
-
     const execcteBatchCallData = [];
     const execcteBatchAddress = [];
     const execcteBatchValue: BigNumber[] = [];
@@ -231,7 +225,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       const erc20Contract = new ethers.Contract(
         ethers.constants.AddressZero,
         erc20Abi,
-        ethersProvider
       );
       const approveZeroCallData = erc20Contract.interface.encodeFunctionData(
         "approve",
@@ -269,7 +262,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
         const callContract = new ethers.Contract(
           ethers.constants.AddressZero,
           callContractAbi,
-          ethersProvider
         );
         const callTxData = callContract.interface.encodeFunctionData(
           callFunc,
@@ -281,7 +273,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     const smarterAccountContract = new ethers.Contract(
       ethers.constants.AddressZero,
       smarterAccountV1Abi,
-      ethersProvider
     );
     const callData = smarterAccountContract.interface.encodeFunctionData(
       "executeBatch(address[],uint256[],bytes[])",
@@ -310,7 +301,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     const ethersProvider = new ethers.providers.JsonRpcProvider(this.blockchainRpc);
     const ethersWallet = new ethers.Wallet(
       ethers.Wallet.createRandom().privateKey,
-      ethersProvider
     );
 
     const nonce = await this.getWalletAddressNonce(walletAddress);

@@ -13,12 +13,16 @@ const { arrayify } = require("@ethersproject/bytes");
  * MPC Account Manage
  */
 export class MPCManageAccount extends ERC4337BaseManageAccount implements AccountInterface {
+
+  private primCacheKey: string = "primResult";
+
   /**
    * wasm instance
    */
   private mpcWasmInstance: any;
+
   private ownerAddress: string = "";
-  private primCacheKey: string = "primResult";
+  
   private mpcBackendApiUrl: string;
   private mpcWasmUrl: string;
   private authorization: string;

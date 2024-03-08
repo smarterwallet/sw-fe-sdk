@@ -88,10 +88,16 @@ const walletFactoryAddres = 'walletFactoryAddres';
 const walletAddress = await ContractWalletUtils.calcContractWalletAddress(blockchainRpcUrl, await mpcAccount.getOwnerAddress(), walletFactoryAddres, 0);
 ```
 
-#### 4. Deploy your wallet wallet
+#### 4. Deploy your wallet
 
 ```javascript
 await mpcAccount.deployContractWalletIfNotExist(walletAddress);
+```
+
+#### 5. Modify blockchain RPC url
+
+```javascript
+mpcAccount.setBlockchainRpc(newRpcUrl);
 ```
 
 ### Transactions
