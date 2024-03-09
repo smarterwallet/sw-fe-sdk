@@ -12,8 +12,10 @@ const { arrayify } = require("@ethersproject/bytes");
 /**
  * MPC Account Manage
  */
-export class MPCManageAccount extends ERC4337BaseManageAccount implements AccountInterface {
-
+export class MPCManageAccount
+  extends ERC4337BaseManageAccount
+  implements AccountInterface
+{
   private primCacheKey: string = "primResult";
 
   /**
@@ -22,13 +24,19 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
   private mpcWasmInstance: any;
 
   private ownerAddress: string = "";
-  
+
   private mpcBackendApiUrl: string;
   private mpcWasmUrl: string;
   private authorization: string;
   private createWalletApiUrl: string;
 
-  constructor(blockchainRpcUrl: string, mpcBackendApiUrl: string, mpcWasmUrl: string, authorization: string, createWalletApiUrl: string) {
+  constructor(
+    blockchainRpcUrl: string,
+    mpcBackendApiUrl: string,
+    mpcWasmUrl: string,
+    authorization: string,
+    createWalletApiUrl: string
+  ) {
     console.log("MPCManageAccount constructor");
     super(blockchainRpcUrl);
 
@@ -55,7 +63,9 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     console.log("initP1KeyData: ", initP1KeyDataRes);
     const initP1KeyDataResJson = JSONBigInt.parse(initP1KeyDataRes);
     if (initP1KeyDataResJson["code"] !== 200) {
-      console.log("wasmInitP1KeyData error. Response: " + initP1KeyDataResJson["msg"]);
+      console.log(
+        "wasmInitP1KeyData error. Response: " + initP1KeyDataResJson["msg"]
+      );
       return;
     }
 
@@ -71,10 +81,18 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
   }
 
   public async deployContractWalletIfNotExist(walletAddress: string) {
-    if (this.ownerAddress === null || this.ownerAddress === undefined || this.ownerAddress === "") {
+    if (
+      this.ownerAddress === null ||
+      this.ownerAddress === undefined ||
+      this.ownerAddress === ""
+    ) {
       await this.updateOwnerAddress();
     }
-    await super.deployContractWalletIfNotExist(this.createWalletApiUrl, this.ownerAddress, walletAddress);
+    await super.deployContractWalletIfNotExist(
+      this.createWalletApiUrl,
+      this.ownerAddress,
+      walletAddress
+    );
   }
 
   private async generateMPCWasmInstance() {
@@ -102,14 +120,20 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
     }
 
     console.log("start to get owner address");
-    if (this.ownerAddress !== null && this.ownerAddress !== undefined && this.ownerAddress !== "") {
+    if (
+      this.ownerAddress !== null &&
+      this.ownerAddress !== undefined &&
+      this.ownerAddress !== ""
+    ) {
       return this.ownerAddress;
     }
 
     // get address
     console.log("start to calculate owner address");
     // params: p1 key, p2 id, random prim1, random prim2
-    console.log("start to get random prim(each client only needs to get it once)");
+    console.log(
+      "start to get random prim(each client only needs to get it once)"
+    );
     let primResult;
     if (CommonUtils.isBrowserEnvironment()) {
       console.log("read prim on browser");
@@ -278,5 +302,7 @@ export class MPCManageAccount extends ERC4337BaseManageAccount implements Accoun
   public setBlockchainRpc(blockchainRpcUrl: string) {
     this.blockchainRpc = blockchainRpcUrl;
   }
-
+  public setAuthorization(authorization: string) {
+    this.authorization = authorization;
+  }
 }
