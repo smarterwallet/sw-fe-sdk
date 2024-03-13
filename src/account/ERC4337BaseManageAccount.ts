@@ -77,17 +77,11 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       this.blockchainRpc,
       tx.body["result"]
     );
-
-    let newContractAddress = walletAddress;
-
-    if (walletAddress !== newContractAddress) {
-      throw new Error(
-        "Deployed contract address error. The new contract address not equals contract address"
-      );
-    }
+    
+    console.log("contract account deployed success.");
   }
 
-  private async getWalletAddressNonce(walletAddress: string): Promise<string> {
+  private async getWalletAddressNonce(walletAddress: string): Promise<bigint> {
     if (this.blockchainRpc == null) {
       throw new Error("blockchainRpc has not been set.");
     }
@@ -99,12 +93,9 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       simpleAccountAbi,
       ethersProvider
     );
-    try {
-      return (await contract.nonce()).toBigInt();
-    } catch (error) {
-      console.error(error);
-      return "";
-    }
+
+    const nonce = await contract.nonce();
+    return nonce.toBigInt();
   }
 
   /**
