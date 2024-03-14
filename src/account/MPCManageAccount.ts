@@ -14,8 +14,7 @@ const { arrayify } = require("@ethersproject/bytes");
  */
 export class MPCManageAccount
   extends ERC4337BaseManageAccount
-  implements AccountInterface
-{
+  implements AccountInterface {
   private primCacheKey: string = "primResult";
 
   /**
@@ -301,6 +300,9 @@ export class MPCManageAccount
 
   public setBlockchainRpc(blockchainRpcUrl: string) {
     this.blockchainRpc = blockchainRpcUrl;
+  }
+  public getBlockchainRpc(): string {
+    return this, this.blockchainRpc;
   }
   public setAuthorization(authorization: string) {
     this.authorization = authorization;
