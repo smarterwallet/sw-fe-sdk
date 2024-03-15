@@ -5,14 +5,15 @@ import { TxUtils } from "../utils/TxUtils";
 import { ContractWalletUtils } from "../utils/ContractWalletUtils";
 import {
   ExecuteParams,
+  isContractCall,
   isContractCallParams,
   isNavtieTransferParams,
 } from "../moduls/ContractCallParams";
 
 const { arrayify } = require("@ethersproject/bytes");
 
-import simpleAccountAbi from "../data/SimpleAccount.js";
 import erc20Abi from "../data/IERC20.js";
+import sourceChainSenderAbi from "../data/SourceChainSender";
 import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
 
 /**
@@ -77,7 +78,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
       this.blockchainRpc,
       tx.body["result"]
     );
-    
+
     console.log("contract account deployed success.");
   }
 
@@ -90,7 +91,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
 
     let contract = new ethers.Contract(
       walletAddress,
-      simpleAccountAbi,
+      smarterAccountV1Abi,
       ethersProvider
     );
 
@@ -184,16 +185,68 @@ export class ERC4337BaseManageAccount implements AccountInterface {
     return op;
   }
 
+  public async buildTxCrossERC20TokenCCIP(
+    walletAddress: string,
+    entryPointAddress: string,
+    gasPrice: BigNumber,
+    sourceChainSenderAddress: string,
+    destChainSelector: BigNumber,
+    destChainReceiverAddress: string,
+    erc20ContractAddress: string,
+    receiverAddress: string,
+    amount: BigNumber,
+    tokenPaymasterAddress?: string,
+    payGasFeeTokenAddress?: string
+  ): Promise<UserOperation> {
+    let op = await this.buildTxCallContract(
+      walletAddress,
+      entryPointAddress,
+      gasPrice,
+      [
+        {
+          ethValue: BigNumber.from(0),
+          callContractAbi: erc20Abi,
+          callContractAddress: erc20ContractAddress,
+          callFunc: "approve",
+          callParams: [sourceChainSenderAddress, BigNumber.from(0)],
+        },
+        {
+          ethValue: BigNumber.from(0),
+          callContractAbi: erc20Abi,
+          callContractAddress: erc20ContractAddress,
+          callFunc: "approve",
+          callParams: [sourceChainSenderAddress, amount],
+        },
+        // function fund(uint256 amount) public
+        {
+          ethValue: BigNumber.from(0),
+          callContractAbi: sourceChainSenderAbi,
+          callContractAddress: sourceChainSenderAddress,
+          callFunc: "fund",
+          callParams: [amount],
+        },
+        // function sendMessage(uint64 destinationChainSelector,address receiver,payFeesIn feeToken,address to,uint256 amount) external returns (bytes32 messageId)
+        {
+          ethValue: BigNumber.from(0),
+          callContractAbi: sourceChainSenderAbi,
+          callContractAddress: sourceChainSenderAddress,
+          callFunc: "sendMessage",
+          // feeToken: 1-Link
+          callParams: [destChainSelector, destChainReceiverAddress, 1, receiverAddress, amount],
+        },
+      ],
+      tokenPaymasterAddress,
+      payGasFeeTokenAddress
+    );
+    return op;
+  }
+
   /**
    * build call contract tx
    * @param entryPointAddress
    * @param tokenPaymasterAddress
    * @param gasPrice
-   * @param ethValue 交易发送ETH数量，单纯调合约时为0
-   * @param callContractAbi 调用的合约ABI文件
-   * @param callContractAddress 调用的合约地址
-   * @param callFunc 调用的方法
-   * @param callParams 调用参数
+   * @param contractCalls 调用合约的参数
    * @returns
    */
   public async buildTxCallContract(
@@ -259,6 +312,12 @@ export class ERC4337BaseManageAccount implements AccountInterface {
           callParams
         );
         execcteBatchCallData.push(callTxData);
+      } else if (isContractCall(contractCallParams)) {
+        // 组装钱包合约调用数据
+        const { ethValue, callContractAddress, calldataHex } = contractCallParams;
+        execcteBatchAddress.push(callContractAddress);
+        execcteBatchValue.push(ethValue);
+        execcteBatchCallData.push(calldataHex);
       }
     }
     const smarterAccountContract = new ethers.Contract(

@@ -1,6 +1,6 @@
 import { BigNumber, ContractInterface } from "ethers";
 
-export type ExecuteParams = NavtieTransferParams | ContractCallParams;
+export type ExecuteParams = NavtieTransferParams | ContractCallParams | ContractCall;
 
 export interface NavtieTransferParams {
   ethValue: BigNumber;
@@ -13,7 +13,13 @@ export interface ContractCallParams {
   callContractAddress: string;
   callFunc: string;
   callParams: ReadonlyArray<any>;
-}  
+}
+
+export interface ContractCall {
+  ethValue: BigNumber;
+  callContractAddress: string;
+  calldataHex: string;
+}
 
 export function isNavtieTransferParams(params: ExecuteParams): params is NavtieTransferParams {
   return (params as NavtieTransferParams).toAddress !== undefined;
@@ -21,4 +27,8 @@ export function isNavtieTransferParams(params: ExecuteParams): params is NavtieT
 
 export function isContractCallParams(params: ExecuteParams): params is ContractCallParams {
   return (params as ContractCallParams).callContractAbi !== undefined;
+}
+
+export function isContractCall(params: ExecuteParams): params is ContractCall {
+  return (params as ContractCall).calldataHex !== undefined;
 }
