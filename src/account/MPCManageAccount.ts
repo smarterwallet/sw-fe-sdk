@@ -79,7 +79,7 @@ export class MPCManageAccount
     this.ownerAddress = await this.getOwnerAddress();
   }
 
-  public async deployContractWalletIfNotExist(walletAddress: string) {
+  public async deployContractWalletIfNotExist(chainId: number, walletAddress: string) {
     if (
       this.ownerAddress === null ||
       this.ownerAddress === undefined ||
@@ -88,6 +88,7 @@ export class MPCManageAccount
       await this.updateOwnerAddress();
     }
     await super.deployContractWalletIfNotExist(
+      chainId,
       this.createWalletApiUrl,
       this.ownerAddress,
       walletAddress

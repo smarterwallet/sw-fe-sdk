@@ -91,7 +91,8 @@ const walletAddress = await ContractWalletUtils.calcContractWalletAddress(blockc
 #### 4. Deploy your wallet
 
 ```javascript
-await mpcAccount.deployContractWalletIfNotExist(walletAddress);
+const chainId = 1; // chain config ID, not network id
+await mpcAccount.deployContractWalletIfNotExist(chainId, walletAddress);
 ```
 
 #### 5. Modify blockchain RPC url

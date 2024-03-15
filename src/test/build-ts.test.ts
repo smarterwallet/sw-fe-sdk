@@ -6,6 +6,9 @@ import erc20Abi from "../data/IERC20.js";
 
 const timeout = 60 * 60 * 1000;
 
+// chain
+const chainId = 1;
+
 // RPC
 const blockchainRpcUrl = "https://mumbai-rpc.web3idea.xyz";
 const ethersProvider = new ethers.providers.JsonRpcProvider(blockchainRpcUrl);
@@ -35,13 +38,13 @@ beforeAll(async () => {
 
     // init mpc account
     await mpcAccount.initAccount(mpcKeyStr);
-    console.log("ownerAddress:", mpcAccount.getOwnerAddress);
+    console.log("ownerAddress:", await mpcAccount.getOwnerAddress());
 
     walletAddress = await ContractWalletUtils.calcContractWalletAddress(blockchainRpcUrl, await mpcAccount.getOwnerAddress(), walletFactoryAddres, 0);
     console.log("walletAddress:", walletAddress);
 
     // deploy contract wallet if not exist
-    await mpcAccount.deployContractWalletIfNotExist(walletAddress);
+    await mpcAccount.deployContractWalletIfNotExist(chainId, walletAddress);
 
     console.log("beforeAll end");
 }, timeout);

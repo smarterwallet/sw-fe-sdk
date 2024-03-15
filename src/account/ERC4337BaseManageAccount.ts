@@ -45,6 +45,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
   }
 
   async deployContractWalletIfNotExist(
+    chainId: number,
     createWalletApiUrl: string,
     ownerAddress: string,
     walletAddress: string
@@ -67,7 +68,7 @@ export class ERC4337BaseManageAccount implements AccountInterface {
 
     // create smart contract account on chain
     console.log("create contract");
-    let params = { address: ownerAddress };
+    let params = { chainId, address: ownerAddress };
     let tx = await ContractWalletUtils.createSmartContractWalletAccount(
       createWalletApiUrl,
       params

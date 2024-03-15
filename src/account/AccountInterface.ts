@@ -109,6 +109,7 @@ export interface AccountInterface {
    * deploy smart contract wallet
    */
   deployContractWalletIfNotExist(
+    chainId: number,
     createWalletApiUrl: string,
     ownerAddress: string,
     walletAddress: string
