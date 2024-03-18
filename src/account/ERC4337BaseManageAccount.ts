@@ -13,7 +13,6 @@ import {
 const { arrayify } = require("@ethersproject/bytes");
 
 import erc20Abi from "../data/IERC20.js";
-import sourceChainSenderAbi from "../data/SourceChainSender";
 import smarterAccountV1Abi from "../data/SmarterAccountV1.js";
 
 /**
@@ -178,62 +177,6 @@ export class ERC4337BaseManageAccount implements AccountInterface {
           callContractAddress: erc20ContractAddress,
           callFunc: "approve",
           callParams: [toAddress, amount],
-        },
-      ],
-      tokenPaymasterAddress,
-      payGasFeeTokenAddress
-    );
-    return op;
-  }
-
-  public async buildTxCrossERC20TokenCCIP(
-    walletAddress: string,
-    entryPointAddress: string,
-    gasPrice: BigNumber,
-    sourceChainSenderAddress: string,
-    destChainSelector: BigNumber,
-    destChainReceiverAddress: string,
-    erc20ContractAddress: string,
-    receiverAddress: string,
-    amount: BigNumber,
-    tokenPaymasterAddress?: string,
-    payGasFeeTokenAddress?: string
-  ): Promise<UserOperation> {
-    let op = await this.buildTxCallContract(
-      walletAddress,
-      entryPointAddress,
-      gasPrice,
-      [
-        {
-          ethValue: BigNumber.from(0),
-          callContractAbi: erc20Abi,
-          callContractAddress: erc20ContractAddress,
-          callFunc: "approve",
-          callParams: [sourceChainSenderAddress, BigNumber.from(0)],
-        },
-        {
-          ethValue: BigNumber.from(0),
-          callContractAbi: erc20Abi,
-          callContractAddress: erc20ContractAddress,
-          callFunc: "approve",
-          callParams: [sourceChainSenderAddress, amount],
-        },
-        // function fund(uint256 amount) public
-        {
-          ethValue: BigNumber.from(0),
-          callContractAbi: sourceChainSenderAbi,
-          callContractAddress: sourceChainSenderAddress,
-          callFunc: "fund",
-          callParams: [amount],
-        },
-        // function sendMessage(uint64 destinationChainSelector,address receiver,payFeesIn feeToken,address to,uint256 amount) external returns (bytes32 messageId)
-        {
-          ethValue: BigNumber.from(0),
-          callContractAbi: sourceChainSenderAbi,
-          callContractAddress: sourceChainSenderAddress,
-          callFunc: "sendMessage",
-          // feeToken: 1-Link
-          callParams: [destChainSelector, destChainReceiverAddress, 1, receiverAddress, amount],
         },
       ],
       tokenPaymasterAddress,

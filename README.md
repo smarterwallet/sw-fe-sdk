@@ -103,7 +103,9 @@ mpcAccount.setBlockchainRpc(newRpcUrl);
 
 ### Transactions
 
-#### Transfer Native Token with token pay master
+#### Transfer Native Token 
+
+##### With token pay master
 
 To build a transaction for transferring native tokens with token pay master:
 
@@ -120,7 +122,9 @@ const op = await mpcAccount.buildTxTransferNativeToken(
 console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
 ```
 
-#### Transfer Native Token without token pay master
+#### Transfer Native Token
+
+##### Without token pay master
 
 To build a transaction for transferring native tokens without token pay master:
 
@@ -135,7 +139,9 @@ const op = await mpcAccount.buildTxTransferNativeToken(
 console.log("Transfer native token tx op:", JSONBigInt.stringify(op));
 ```
 
-#### Transfer ERC20 Token with token pay master
+#### Transfer ERC20 Token 
+
+##### With token pay master
 
 To build a transaction for transferring ERC20 tokens with token pay master:
 
@@ -153,7 +159,9 @@ const op = await mpcAccount.buildTxTransferERC20Token(
 console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 ```
 
-#### Transfer ERC20 Token without token pay master
+#### Transfer ERC20 Token 
+
+##### Without token pay master
 
 To build a transaction for transferring ERC20 tokens without token pay master:
 
@@ -170,6 +178,120 @@ console.log("Transfer ERC20 token tx op:", JSONBigInt.stringify(op));
 ```
 
 The full test code is [here](https://github.com/smarterwallet/sw-fe-sdk/tree/dev/src/test).
+
+#### Swap
+
+##### Uniswap
+
+To build a swap transaction.
+
+Swap SWT to Matic:
+
+```javascript
+// swap token address
+const swtTokenAddress = "0x409646509BE42Aea79Eab370eFC2c0eC2E51753B";
+// router address
+const callContractAddress = "0xf471d32cb40837bf24529fcf17418fc1a4807626";
+// swap tx data
+const calldataHex = "0x415565b0000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000011d6000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000042000000000000000000000000000000000000000000000000000000000000004c000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb03288900000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000002e00000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000012556e697377617056330000000000000000000000000000000000000000000000000000000000000000000000000011d60000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002b409646509be42aea79eab370efc2c0ec2e51753b000bb89c3c9283d3e44854697cd22d3faa240cfb0328890000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb032889ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000000000000000000000000000000b000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000000000000000000000000000000000000000000000869584cd00000000000000000000000010000000000000000000000000000000000000110000000000000000000000000000000002fdcc3f678d6242a53ad06d046c6080";
+const gasPrice = await ethersWallet.getGasPrice();
+let op = await mpcAccount.buildTxCallContract(
+    walletAddress,
+    entryPointAddress,
+    gasPrice,
+    [
+        // approve sell token(swt)
+        {
+            ethValue: BigNumber.from(0),
+            callContractAbi: erc20Abi,
+            callContractAddress: swtTokenAddress,
+            callFunc: "approve",
+            callParams: [callContractAddress, ethers.constants.MaxUint256],
+        },
+        // swap
+        {
+            ethValue: BigNumber.from(0),
+            callContractAddress,
+            calldataHex,
+        }
+    ],
+    tokenPaymasterAddress,
+    payGasFeeTokenAddress
+);
+console.log("build swap SWT->Matic tx on mumbai with token pay master. op:", JSONBigInt.stringify(op));
+```
+
+#### Cross chain
+
+##### CCIP
+
+To build a creoss chain transaction by CCIP.
+
+Cross USDC from mumbai to fuji:
+
+```javascript
+// wallet address
+const sourceChainSenderAddress = "0x4eb8c2c39BF1baA0850BAb49eeF5A6D874E68b08";
+// fuji selelctor
+const destChainSelector = BigNumber.from("14767482510784806043");
+const destChainReceiverAddress = "0x4Ad8C9b33a5dDd7A4762948153Ebd43Bcf8E91Ad";
+// USDC address
+const erc20ContractAddress = "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97";
+// fuji receiver address
+const receiverAddress = walletAddress;
+// cross chain amount
+const amount = BigNumber.from(2);
+
+const gasPrice = await ethersWallet.getGasPrice();
+let op = await mpcAccount.buildTxCallContract(
+    walletAddress,
+    entryPointAddress,
+    gasPrice,
+    [
+        // reset allowance
+        {
+            ethValue: BigNumber.from(0),
+            callContractAbi: erc20Abi,
+            callContractAddress: erc20ContractAddress,
+            callFunc: "approve",
+            callParams: [sourceChainSenderAddress, BigNumber.from(0)],
+        },
+        // approve
+        {
+            ethValue: BigNumber.from(0),
+            callContractAbi: erc20Abi,
+            callContractAddress: erc20ContractAddress,
+            callFunc: "approve",
+            callParams: [sourceChainSenderAddress, amount],
+        },
+        // function fund(uint256 amount) public
+        {
+            ethValue: BigNumber.from(0),
+            callContractAbi: sourceChainSenderAbi,
+            callContractAddress: sourceChainSenderAddress,
+            callFunc: "fund",
+            callParams: [amount],
+        },
+        // function sendMessage(uint64 destinationChainSelector,address receiver,payFeesIn feeToken,address to,uint256 amount) external returns (bytes32 messageId)
+        {
+            ethValue: BigNumber.from(0),
+            callContractAbi: sourceChainSenderAbi,
+            callContractAddress: sourceChainSenderAddress,
+            callFunc: "sendMessage",
+            // feeToken: 1-Link
+            callParams: [destChainSelector, destChainReceiverAddress, 1, receiverAddress, amount],
+        },
+    ],
+    tokenPaymasterAddress,
+    payGasFeeTokenAddress
+);
+console.log("build cross SWT tx from mumbai to fuji with token pay master. op:", JSONBigInt.stringify(op));
+```
+
+##### CCTP
+
+TODO
+
 
 ## Unit Test
 

@@ -3,6 +3,7 @@ import { MPCManageAccount } from '../account/MPCManageAccount';
 import { JSONBigInt } from '../mpc/CommonUtils';
 import { ContractWalletUtils } from '../utils/ContractWalletUtils';
 import erc20Abi from "../data/IERC20.js";
+import sourceChainSenderAbi from "../data/SourceChainSender";
 
 const timeout = 60 * 60 * 1000;
 
@@ -21,7 +22,7 @@ const tokenPaymasterAddress = "0x409646509BE42Aea79Eab370eFC2c0eC2E51753B";
 const payGasFeeTokenAddress = "0x409646509BE42Aea79Eab370eFC2c0eC2E51753B";
 
 // MPC 变量
-const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA1MTMyMTEsInN1YiI6MX0.KD_B-bmbUuTPG1aflq9zDzvko7iMWOPixtVmDK11NHo";
+const authorization = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTA4MTI4MjUsInN1YiI6MX0.iX4BAuURhLfdU2JiNI9SrWOJODQmS5zXznZE2qYNacU";
 const mpcKeyStr = '{"Id":1,"ShareI":219499044982805701588892377127447501004150432209403709303384334655408914819632,"PublicKey":{"Curve":"secp256k1","X":97292621653416266750380703637875538596866301353776849812982916816163853412988,"Y":32440693875191451391160231867342089322288044048122424317742935922111154446039},"ChainCode":"013d57fb4dea99754bc3773dedf201f9c555684eab127a529d335663c0063425c9","SharePubKeyMap":{"1":{"Curve":"secp256k1","X":29161051009961544429569809800230777877472024870500305033506395207674118416373,"Y":44796153314212729221467409179106608297103339961871905099986927630538307838333},"2":{"Curve":"secp256k1","X":40713022408703343240041761412242766867715143730321538117446016757996923246685,"Y":54311185172390094674585055235636263490742909410647712991051877387418786801570},"3":{"Curve":"secp256k1","X":36535362237429459090412737650018500331292975515911824642793483191706305761009,"Y":97503616435531946333830622361346685900869373933095170990256609518446036018220}}}';
 
 // mpc账户
@@ -128,12 +129,12 @@ test('build transfer erc20 token tx without token pay master', async () => {
     console.log("transfer erc20 token tx without token pay master. op:", JSONBigInt.stringify(op));
 }, timeout);
 
-test('build cross SWT tx from mumbai to fuji with token pay master', async () => {
+test('build cross USDC by CCIP from mumbai to fuji with token pay master', async () => {
     const sourceChainSenderAddress = "0x4eb8c2c39BF1baA0850BAb49eeF5A6D874E68b08";
     // fuji
     const destChainSelector = BigNumber.from("14767482510784806043");
     const destChainReceiverAddress = "0x4Ad8C9b33a5dDd7A4762948153Ebd43Bcf8E91Ad";
-    const usdcContractAddress = "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97"
+    const erc20ContractAddress = "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97"
     const receiverAddress = walletAddress;
     const amount = BigNumber.from(2);
 
@@ -141,18 +142,47 @@ test('build cross SWT tx from mumbai to fuji with token pay master', async () =>
 
     const gasPrice = await ethersWallet.getGasPrice();
     console.log("gasPrice:", gasPrice);
-    const op = await mpcAccount.buildTxCrossERC20TokenCCIP(
+    let op = await mpcAccount.buildTxCallContract(
         walletAddress,
         entryPointAddress,
         gasPrice,
-        sourceChainSenderAddress,
-        destChainSelector,
-        destChainReceiverAddress,
-        usdcContractAddress,
-        receiverAddress,
-        amount,
+        [
+            // reset allowance
+            {
+                ethValue: BigNumber.from(0),
+                callContractAbi: erc20Abi,
+                callContractAddress: erc20ContractAddress,
+                callFunc: "approve",
+                callParams: [sourceChainSenderAddress, BigNumber.from(0)],
+            },
+            // approve
+            {
+                ethValue: BigNumber.from(0),
+                callContractAbi: erc20Abi,
+                callContractAddress: erc20ContractAddress,
+                callFunc: "approve",
+                callParams: [sourceChainSenderAddress, amount],
+            },
+            // function fund(uint256 amount) public
+            {
+                ethValue: BigNumber.from(0),
+                callContractAbi: sourceChainSenderAbi,
+                callContractAddress: sourceChainSenderAddress,
+                callFunc: "fund",
+                callParams: [amount],
+            },
+            // function sendMessage(uint64 destinationChainSelector,address receiver,payFeesIn feeToken,address to,uint256 amount) external returns (bytes32 messageId)
+            {
+                ethValue: BigNumber.from(0),
+                callContractAbi: sourceChainSenderAbi,
+                callContractAddress: sourceChainSenderAddress,
+                callFunc: "sendMessage",
+                // feeToken: 1-Link
+                callParams: [destChainSelector, destChainReceiverAddress, 1, receiverAddress, amount],
+            },
+        ],
         tokenPaymasterAddress,
-        payGasFeeTokenAddress,
+        payGasFeeTokenAddress
     );
     console.log("build cross SWT tx from mumbai to fuji with token pay master. op:", JSONBigInt.stringify(op));
 }, timeout);
