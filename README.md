@@ -264,14 +264,6 @@ let op = await mpcAccount.buildTxCallContract(
             callFunc: "approve",
             callParams: [sourceChainSenderAddress, amount],
         },
-        // function fund(uint256 amount) public
-        {
-            ethValue: BigNumber.from(0),
-            callContractAbi: sourceChainSenderAbi,
-            callContractAddress: sourceChainSenderAddress,
-            callFunc: "fund",
-            callParams: [amount],
-        },
         // function sendMessage(uint64 destinationChainSelector,address receiver,payFeesIn feeToken,address to,uint256 amount) external returns (bytes32 messageId)
         {
             ethValue: BigNumber.from(0),
