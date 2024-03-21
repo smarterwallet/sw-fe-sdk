@@ -56,7 +56,7 @@ export default [
         name: "SourceChainSender__WithdrawFailed",
         type: "error"
     }, {
-        "anonymous": false,
+        anonymous: false,
         inputs: [{
             "indexed": true,
             internalType: "bytes32",
@@ -96,7 +96,7 @@ export default [
         name: "MessageSent",
         type: "event"
     }, {
-        "anonymous": false,
+        anonymous: false,
         inputs: [{
             "indexed": true,
             internalType: "address",
@@ -111,7 +111,7 @@ export default [
         name: "OwnerWithdrawn",
         type: "event"
     }, {
-        "anonymous": false,
+        anonymous: false,
         inputs: [{
             "indexed": true,
             internalType: "address",
@@ -126,7 +126,7 @@ export default [
         name: "OwnershipTransferRequested",
         type: "event"
     }, {
-        "anonymous": false,
+        anonymous: false,
         inputs: [{
             "indexed": true,
             internalType: "address",
@@ -141,7 +141,7 @@ export default [
         name: "OwnershipTransferred",
         type: "event"
     }, {
-        "anonymous": false,
+        anonymous: false,
         inputs: [{
             "indexed": true,
             internalType: "address",
