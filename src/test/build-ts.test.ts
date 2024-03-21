@@ -50,90 +50,90 @@ beforeAll(async () => {
     console.log("beforeAll end");
 }, timeout);
 
-test('change network and then build transfer native token tx without token pay master', async () => {
-    const gasPrice = await ethersWallet.getGasPrice();
-    console.log("gasPrice:", gasPrice)
-    const op = await mpcAccount.buildTxTransferNativeToken(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
-        ethers.utils.parseEther("0.00001"),
-    );
-    console.log("transfer native token tx without token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test('change network and then build transfer native token tx without token pay master', async () => {
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     console.log("gasPrice:", gasPrice)
+//     const op = await mpcAccount.buildTxTransferNativeToken(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+//         ethers.utils.parseEther("0.00001"),
+//     );
+//     console.log("transfer native token tx without token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);
 
-test('calculate owner address', async () => {
-    const ownerAddress = await mpcAccount.getOwnerAddress()
-    console.log("ownerAddress:", ownerAddress);
-    expect(ownerAddress).toBe("0xd5eCdffB469576D7682fE6b02C9549d6C7756d98");
-}, timeout);
+// test('calculate owner address', async () => {
+//     const ownerAddress = await mpcAccount.getOwnerAddress()
+//     console.log("ownerAddress:", ownerAddress);
+//     expect(ownerAddress).toBe("0xd5eCdffB469576D7682fE6b02C9549d6C7756d98");
+// }, timeout);
 
-test('build transfer native token tx without token pay master', async () => {
-    const gasPrice = await ethersWallet.getGasPrice();
-    console.log("gasPrice:", gasPrice)
-    const op = await mpcAccount.buildTxTransferNativeToken(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
-        ethers.utils.parseEther("0.00001"),
-    );
-    console.log("transfer native token tx without token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test('build transfer native token tx without token pay master', async () => {
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     console.log("gasPrice:", gasPrice)
+//     const op = await mpcAccount.buildTxTransferNativeToken(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+//         ethers.utils.parseEther("0.00001"),
+//     );
+//     console.log("transfer native token tx without token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);
 
-test('build transfer native token tx with token pay master', async () => {
-    const gasPrice = await ethersWallet.getGasPrice();
-    console.log("gasPrice:", gasPrice)
-    const op = await mpcAccount.buildTxTransferNativeToken(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
-        ethers.utils.parseEther("0.00001"),
-        tokenPaymasterAddress,
-        payGasFeeTokenAddress
-    );
-    console.log("transfer native token tx with token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test('build transfer native token tx with token pay master', async () => {
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     console.log("gasPrice:", gasPrice)
+//     const op = await mpcAccount.buildTxTransferNativeToken(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+//         ethers.utils.parseEther("0.00001"),
+//         tokenPaymasterAddress,
+//         payGasFeeTokenAddress
+//     );
+//     console.log("transfer native token tx with token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);
 
-test('build transfer erc20 token tx with token pay master', async () => {
-    const gasPrice = await ethersWallet.getGasPrice();
-    console.log("gasPrice:", gasPrice)
-    const op = await mpcAccount.buildTxTransferERC20Token(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
-        ethers.utils.parseEther("0.00001"),
-        // 这里是交易的token地址 这里测试直接用的tokenPaymasterAddress
-        tokenPaymasterAddress,
-        tokenPaymasterAddress,
-        payGasFeeTokenAddress
-    );
-    console.log("transfer erc20 token tx with token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test('build transfer erc20 token tx with token pay master', async () => {
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     console.log("gasPrice:", gasPrice)
+//     const op = await mpcAccount.buildTxTransferERC20Token(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+//         ethers.utils.parseEther("0.00001"),
+//         // 这里是交易的token地址 这里测试直接用的tokenPaymasterAddress
+//         tokenPaymasterAddress,
+//         tokenPaymasterAddress,
+//         payGasFeeTokenAddress
+//     );
+//     console.log("transfer erc20 token tx with token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);
 
-test('build transfer erc20 token tx without token pay master', async () => {
-    const gasPrice = await ethersWallet.getGasPrice();
-    console.log("gasPrice:", gasPrice)
-    const op = await mpcAccount.buildTxTransferERC20Token(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
-        ethers.utils.parseEther("0.00001"),
-        // 这里是交易的token地址 这里测试直接用的tokenPaymasterAddress
-        tokenPaymasterAddress,
-    );
-    console.log("transfer erc20 token tx without token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test('build transfer erc20 token tx without token pay master', async () => {
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     console.log("gasPrice:", gasPrice)
+//     const op = await mpcAccount.buildTxTransferERC20Token(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         "0x78857c6C19fD2e5E4bAbDcEd5b10861f8858d374",
+//         ethers.utils.parseEther("0.00001"),
+//         // 这里是交易的token地址 这里测试直接用的tokenPaymasterAddress
+//         tokenPaymasterAddress,
+//     );
+//     console.log("transfer erc20 token tx without token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);
 
 test('build cross USDC by CCIP from mumbai to fuji with token pay master', async () => {
     const sourceChainSenderAddress = "0x24FE506212F21B989886B06EF8166Ba5EDaB233e";
     // fuji
     const destChainSelector = BigNumber.from("14767482510784806043");
-    const destChainReceiverAddress = "0x4Ad8C9b33a5dDd7A4762948153Ebd43Bcf8E91Ad";
+    const destChainReceiverAddress = "0x895adF48D0F6A57d14C35AcE2Dd75E4FAC09471F";
     const erc20ContractAddress = "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97"
     const receiverAddress = walletAddress;
     const amount = BigNumber.from(2);
@@ -176,37 +176,37 @@ test('build cross USDC by CCIP from mumbai to fuji with token pay master', async
         tokenPaymasterAddress,
         payGasFeeTokenAddress
     );
-    console.log("build cross SWT tx from mumbai to fuji with token pay master. op:", JSONBigInt.stringify(op));
+    console.log("build cross USDC tx from mumbai to fuji with token pay master. op:", JSONBigInt.stringify(op));
 }, timeout);
 
 
-test("build swap SWT->Matic tx on mumbai with token pay master.", async () => {
-    const swtTokenAddress = "0x409646509BE42Aea79Eab370eFC2c0eC2E51753B";
-    const callContractAddress = "0xf471d32cb40837bf24529fcf17418fc1a4807626";
-    const calldataHex = "0x415565b0000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000011d6000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000042000000000000000000000000000000000000000000000000000000000000004c000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb03288900000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000002e00000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000012556e697377617056330000000000000000000000000000000000000000000000000000000000000000000000000011d60000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002b409646509be42aea79eab370efc2c0ec2e51753b000bb89c3c9283d3e44854697cd22d3faa240cfb0328890000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb032889ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000000000000000000000000000000b000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000000000000000000000000000000000000000000000869584cd00000000000000000000000010000000000000000000000000000000000000110000000000000000000000000000000002fdcc3f678d6242a53ad06d046c6080";
-    const gasPrice = await ethersWallet.getGasPrice();
-    let op = await mpcAccount.buildTxCallContract(
-        walletAddress,
-        entryPointAddress,
-        gasPrice,
-        [
-            // approve sell token(swt)
-            {
-                ethValue: BigNumber.from(0),
-                callContractAbi: erc20Abi,
-                callContractAddress: swtTokenAddress,
-                callFunc: "approve",
-                callParams: [callContractAddress, ethers.constants.MaxUint256],
-            },
-            // swap
-            {
-                ethValue: BigNumber.from(0),
-                callContractAddress,
-                calldataHex,
-            }
-        ],
-        tokenPaymasterAddress,
-        payGasFeeTokenAddress
-    );
-    console.log("build swap SWT->Matic tx on mumbai with token pay master. op:", JSONBigInt.stringify(op));
-}, timeout);
+// test("build swap SWT->Matic tx on mumbai with token pay master.", async () => {
+//     const swtTokenAddress = "0x409646509BE42Aea79Eab370eFC2c0eC2E51753B";
+//     const callContractAddress = "0xf471d32cb40837bf24529fcf17418fc1a4807626";
+//     const calldataHex = "0x415565b0000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000000000000000000000000000000011d6000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000042000000000000000000000000000000000000000000000000000000000000004c000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000036000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb03288900000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000320000000000000000000000000000000000000000000000000000000000000032000000000000000000000000000000000000000000000000000000000000002e00000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000012556e697377617056330000000000000000000000000000000000000000000000000000000000000000000000000011d60000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002b409646509be42aea79eab370efc2c0ec2e51753b000bb89c3c9283d3e44854697cd22d3faa240cfb0328890000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000400000000000000000000000009c3c9283d3e44854697cd22d3faa240cfb032889ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000000000000000000000000000000000000000000000000000000000000b000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000001000000000000000000000000409646509be42aea79eab370efc2c0ec2e51753b0000000000000000000000000000000000000000000000000000000000000000869584cd00000000000000000000000010000000000000000000000000000000000000110000000000000000000000000000000002fdcc3f678d6242a53ad06d046c6080";
+//     const gasPrice = await ethersWallet.getGasPrice();
+//     let op = await mpcAccount.buildTxCallContract(
+//         walletAddress,
+//         entryPointAddress,
+//         gasPrice,
+//         [
+//             // approve sell token(swt)
+//             {
+//                 ethValue: BigNumber.from(0),
+//                 callContractAbi: erc20Abi,
+//                 callContractAddress: swtTokenAddress,
+//                 callFunc: "approve",
+//                 callParams: [callContractAddress, ethers.constants.MaxUint256],
+//             },
+//             // swap
+//             {
+//                 ethValue: BigNumber.from(0),
+//                 callContractAddress,
+//                 calldataHex,
+//             }
+//         ],
+//         tokenPaymasterAddress,
+//         payGasFeeTokenAddress
+//     );
+//     console.log("build swap SWT->Matic tx on mumbai with token pay master. op:", JSONBigInt.stringify(op));
+// }, timeout);

@@ -231,10 +231,10 @@ Cross USDC from mumbai to fuji:
 
 ```javascript
 // wallet address
-const sourceChainSenderAddress = "0x4eb8c2c39BF1baA0850BAb49eeF5A6D874E68b08";
+const sourceChainSenderAddress = "0x24FE506212F21B989886B06EF8166Ba5EDaB233e";
 // fuji selelctor
 const destChainSelector = BigNumber.from("14767482510784806043");
-const destChainReceiverAddress = "0x4Ad8C9b33a5dDd7A4762948153Ebd43Bcf8E91Ad";
+const destChainReceiverAddress = "0x895adF48D0F6A57d14C35AcE2Dd75E4FAC09471F";
 // USDC address
 const erc20ContractAddress = "0x9999f7Fea5938fD3b1E26A12c3f2fb024e194f97";
 // fuji receiver address
